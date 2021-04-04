@@ -1,0 +1,65 @@
+//by Denis Kozub
+cp, cmp, tail
+
+1) cp.c is equal to shell cp
+BUT there are a few differences:
+    -no flags available
+    -it takes 2 arguments only:
+    -first one has to be an existing file which is possible to open for readonly
+    -second one can be either:
+        -existing file which is possible to open for writeonly. In this case it
+         will be rewritten.
+        -non-existing file which can be cteated. It this case it is created with
+         the same rights as the first argument file.
+    -error diagnostics can differ a bit but they are close to the original ones
+    -return values:
+        -0 if everything worked fine
+        -ERR_MISS_OP = 1 - missing file operand
+        -ERR_MISS_DEST = 2 - missing destination file operand
+        -ERR_MANY_ARGS = 3 - too many arguments
+        -ERR_NON_EXIST = 4 - No such file
+        -ERR_WRITE = 5 - write error
+        -ERR_STAT = 6 - stat error
+        -ERR_OPEN = 7 - destination file open error
+
+2) cmp.c is equal to shell cmp
+BUT there are a few differences:
+    -no flags available
+    -it takes 2 arguments only (cannot be one!!!):
+    -both have to be an existing files which are possible to open for readonly
+    -error diagnostics can differ a bit but they are close to the original ones
+    -return values:
+        -0 if everything worked fine
+        -ERR_MISS_1 = 1 - missing first operand
+        -ERR_MISS_2 = 2 - missing second operand
+        -ERR_MANY_ARGS = 3 - too many arguments
+        -ERR_NON_EXIST = 4 - No such file
+        -ERR_WRITE = 5 - write error
+
+3) tail.c is equal to shell tail
+BUT there are a few differences:
+    -only 1 flag possible: -n
+    -it takes either 1 or 3 arguments:
+    -if there is no -n flag:
+        -only argument has to be an existing file which is possible to open
+         for readonly
+    -if there is -n flag:
+        -first argument is -n flag exactly
+        -second argumentis either +NUM or NUM/-NUM
+         where num is number of lines in long diapason
+        -third argument has to be an existing file which is possible to open
+         for readonly
+    -error diagnostics can differ a bit but they are close to the original ones
+    -return values:
+        -0 if everything worked fine
+        -ERR_MISS_OP = 1 - missing file operand
+        -ERR_WRONG_ARG = 2 - wrong argument list
+        -ERR_MANY_ARGS = 3 - too many arguments
+        -ERR_NON_EXIST = 4 - No such file
+        -ERR_DIAPASON = 5 - number of lines out of diapason
+        -ERR_WRONG_NUM = 6 - invalid number of lines
+        -ERR_WRITE = 7 - write error
+        -ERR_LSEEK = 8 - lseek error
+
+4)makefile
+Created to test programs (6 sections). For more information check "Makefile"

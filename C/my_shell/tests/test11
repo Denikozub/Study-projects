@@ -1,0 +1,2 @@
+ls && (uname && (ls -l | wc -l || echo oooh) || uname && echo I finally did it) || ls
+

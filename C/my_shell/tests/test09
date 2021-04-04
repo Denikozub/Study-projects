@@ -1,0 +1,5 @@
+ls && (cat || less) < tests/test02 > output_file
+uname && (ls && ls -l | wc -l) >> output_file && echo We did it! 
+head < output_file
+ls || (uname && uname)
+

@@ -1,0 +1,2 @@
+cat < my_shell.c | grep 1 | wc -l > output_file 
+

@@ -1,0 +1,14 @@
+test_libgraph:	libgraph.a
+	gcc -fsanitize=undefined test_libgraph.c -L. -lgraph -o test_libgraph
+
+libgraph.a:	source.o
+	ar -cr libgraph.a source.o 
+	ranlib libgraph.a
+
+source.o:	source.c
+	gcc -c -O2 -ftrapv -fsanitize=undefined -Wall -Werror -Wformat-security -Wignored-qualifiers -Winit-self -Wswitch-default -Wfloat-equal -Wshadow -Wpointer-arith -Wtype-limits -Wempty-body -Wlogical-op -Wstrict-prototypes -Wold-style-declaration -Wold-style-definition -Wmissing-parameter-type -Wmissing-field-initializers -Wnested-externs -Wno-pointer-sign -Wcast-qual -Wwrite-strings -std=gnu11 -lm source.c
+
+remove:
+	rm -rf source.o
+	rm -rf libgraph.a
+

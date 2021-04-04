@@ -1,0 +1,4 @@
+cat < tests/test02 > output_file
+ls -l >> output_file
+head -n 2 < output_file
+

@@ -1,0 +1,2 @@
+ls | (cat && ls -l | wc -l) > output_file
+

@@ -1,0 +1,167 @@
+//by Denis Kozub
+
+This is one readme for all modules and calculator itself
+
+General info:
+
+    1)  INTEGER ONLY
+    2)  considered all intermediate calculations in range of int
+    3)  was only tested on Linux. may not work on other OS
+    4)  works from top to bottom as usual:
+        first initalize variables, then calculate
+    5)  variable input ends by a stop-phrase ("stop")
+    6)  variables can be initialized with negative values
+    7)  initialized by '=': first name, last value (eg a=2)
+    8)  any number of spaces inside initialization is allowed
+    9)  any number of enters between initialization is allowed
+    10) only binary operations: + - * /
+    11) expression input can be ended with either enter or EOF
+    12) any number of spaces inside expression is allowed
+    13) polis.h and stack.h are made universal
+
+
+
+Makefile
+
+calculate   - build & link the project
+remove      - remove all .o files
+
+
+
+ALL FUNCTIONS WHICH RETURN A VALUE RETURN 0 IF RUN CORRECTLY
+
+
+
+stack.h
+
+typedef struct Stack_struct {
+    void *data_p;               //pointer where data is stored. can be any type
+    size_t size_data;           //size of stored data
+    struct Stack_struct *next;  //pointer to next element
+} Stack_struct;
+
+typedef Stack_struct * Stack_p; //pointer to Stack_struct
+    The idea is not to occupy memory for struct and work with pointers
+
+int init_stack(Stack_p *head);
+    Takes address of head
+    Initialize *head with zero - needed for realloc
+    return 1 if head == NULL
+
+int push_stack(Stack_p *head, const void *data_p, const size_t size_data);
+    Takes address of head
+    Allocates memory of size_data bytes at head->data_p and copies size_data
+    ... bytes from data_p pointer to head->data_p
+    returns 1 if head == NULL || data_p == NULL || size_data <= 0
+    returns 1 if alloc failed
+
+int pop_stack(Stack_p *head, void **res_p, size_t *size_res);
+    Takes address of head, res_p pointer, size_res
+    Copies size_res bytes from head->data_p pointer to res_p
+    Memory is not allocated, head->data_p pointer not freed, head pointer freed
+    returns 1 if head == NULL || res_p == NULL || size_res == NULL
+    returns 1 if *head == NULL but no message is printed
+
+void final_stack(Stack_p *head);
+    Takes address of head
+    frees all allocated memory
+    
+
+    
+recursive_descent.h
+
+int descent_polis(Polis *return_polis);
+    Takea address of return_polis
+    Gets an expression from stdin
+    Creates reverse polish notation by parsing the input string
+    Allocates memory at return_polis to write there output array and its size
+    If runs correctly (returns 0) memory is not freed
+    Otherwise all allocated memory is freed
+    return values:
+        ERR_BRACKET = 1,        //bracket imbalance
+        ERR_MISS_OPERAND = 2,   //missed operand
+        ERR_MISS_OPERATION = 3, //missed operation
+        ERR_WRONG_VARIABLE = 4, //wrong variable
+        ERR_WRONG_NUMBER = 5,   //wrong number
+        ERR_ALLOC = 6,          //alloc error
+        ERR_STACK = 7,          //stack error
+        ERR_DIVIDE_BY_Z = 8,    //divide by zero
+        ERR_SIZE_MATCH = 9,     //data sizes do not match
+        ERR_NO_VAR = 10         //variable does not exist
+        
+        
+
+var_table.h
+
+typedef struct Vars {
+    char **name;    //name of variable
+    int *value;     //its value
+    int number;     //number of variables
+} Vars;
+
+int init_var_table(Vars *table);
+    Takes address of table
+    Initialize with zero values - needed for realloc
+    return 1 if table == NULL
+
+int input_var_table(Vars *table);
+    Takea address of table
+    Gets variables and their values from stdin
+    Allocates memory at table->data and table->value
+    If runs correctly (returns 0) memory is not freed
+    Otherwise all allocated memory is freed
+    Variable input ends by a stop-phrase ("stop")
+    Variables can be initialized with negative values
+    Initialized by '=': first name, last value (eg a=2)
+    Any number of spaces inside initialization is allowed
+    Any number of enters between initialization is allowed
+    return values:
+        ERR_EMPTY_TABLE = 1,    //table == NULL
+        ERR_END_INPUT = 2,      //end of input
+        ERR_FIRST_SYMBOL = 3,   //wrong first symbol of var
+        ERR_WRONG_SYMBOL = 4,   //wrong second to last symbol
+        ERR_ALLOC = 5,          //allocate error
+        ERR_REACH_MAX = 6,      //reached max number of symbols = 6
+        ERR_WRONG_DIGIT = 7,    //unacceptable number digit
+        ERR_EXTRA_SPACE = 8,    //extra space
+        ERR_LONE_MINUS = 9      //lonely minus
+
+void free_var_table(Vars *table);
+    Takes address of table
+    frees all allocated memory
+
+
+        
+polis.h
+
+typedef struct
+{
+    void *data;     //byte array
+    size_t size;    //its size in bytes
+} Polis;
+    Size of element and an element consists of Calculate_elem pointer
+    ...and data itself, to the array of polis
+
+typedef char Size_elem; //1 byte - type of size
+
+typedef int (*Calculate_elem)(const void *elem,
+        const Size_elem size, Stack_p *head, const Vars *table);
+    Takes pointer to an element, its size, address of head and table
+    Pointer to a function that operates with data inside elements
+    Working scenarios depend on whether data is operator or a variable/number
+    Is added before each element when adding to polis
+    If an operator: it does pop pop calculate push
+    If a number it does push, if a variable it first checks table of vars
+
+int calculate_polis(const Polis *polis, void **resp,
+        size_t *size_res, const Vars *table);
+    Takes address of polis, resp pointer, size_res and table
+    For each element in polis.data if calls Calculate_elem
+    After all calculations result is on top of stack
+    If run correctly, result is popped to resp pointer, memory not freed
+    Otherwise all allocated memory is freed
+    returns value that stack functions or Calculate_elem returned
+
+void free_polis(Polis *polis);
+    Takes address of polis
+    frees all allocated memory

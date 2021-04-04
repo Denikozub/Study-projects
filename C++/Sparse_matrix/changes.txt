@@ -1,0 +1,6 @@
+1) rename spare -> sparse
+2) add tests
+3) remake operator+ to work with all default values
+(used to only work with 0 as default value)
+4) stdexcept
+5) const indexing

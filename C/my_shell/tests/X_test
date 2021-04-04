@@ -1,0 +1,7 @@
+//The aim is to test & in the end of the line
+//enter these one by one pressing ENTER from keyboard:
+
+sleep 5 && echo 1 &
+echo 2
+
+//Be sure to type the second command within 5 seconds!

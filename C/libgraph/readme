@@ -1,0 +1,250 @@
+libgraph
+graph realization by Denis Kozub
+graph is directed
+possible initialisation by csv file or step by step node/edge adding/removing
+realization by adjacency matrix, all changes done with it
+=> not effective for work with large numbers of nodes and low numbers of edges
+!!! all nodes numbered from 1 to n, automatic shift if removing a node
+#include "graph.h" // header file
+
+typedef struct Gr {
+    int **mat; //adjacency matrix
+    int n; //dimension
+} Graph;
+
+1.
+void init(Graph *g);
+
+Fill g with zero values. Required for future work. Takes g address (&g).
+
+Example:
+//create graph
+    Graph g;
+    init(&g);
+
+2.
+int is_empty_graph(const Graph *g);
+
+Check if g is empty (initialized with zero values or not initialized). Takes g address (&g).
+Return 0 if empty,
+Return -9 if not.
+
+Example:
+//check if empty
+    if (is_empty_graph) {
+        return -9;
+    }
+
+3.
+void free_graph(Graph *g);
+
+Deinitialize g. Free all allocated memory. Takes g address (&g).
+
+Example:
+//deinitialize graph
+    free_graph(&g);
+
+4.
+int init_file(Graph *g, const char *init_filename);
+
+Initialize g.mat with matrix from init_filename. Allocates memory. Takes g address (&g). Csv format only. Opens for read only and cannot be changed. File has to exist. Set g.n.
+Returning values:
+0:OK
+-1:cannot open file
+-2:not all rows have equal number of symbols
+-3:not onle 1s and 0s
+-4:separator not ' ' or ',' or ';'
+-5:number of rows != number of columns
+-6:even number of columns
+-7:reading digits error
+-8:allocate memory error
+
+Example:
+//initialize graph from csv file
+    const char *init_filename = "test4.csv";
+    int result;
+    if ((result = init_file(&g, init_filename)) < 0) {
+        printf("\ninit_file exited with code: %d\n", result);
+        free_graph(&g);
+        return result;
+    }
+
+5.
+void print_graph(const Graph *g);
+
+Print g.mat in stdin. Use no separators. Takes g address (&g).
+
+Example:
+//print graph
+    print_graph(&g);
+
+6.
+int remove_node(Graph *g, int d);
+
+Delete colunm and row number d (in [1, g.n]). Numeration starts with 1. Takes g address (&g). Needed memory is freed. Deleted values cannot be accessed. If g.n = 1 and d = 1 then g is freed.
+Returning values:
+0:OK
+-8:allocate memory error
+-9:empty graph
+-10:wrong parametr d
+
+Example:
+//remove node
+    printf("remove node 3:\n");
+    if ((result = remove_node(&g, 3)) < 0) {
+        printf("\nremove_node exited with code: %d\n", result);
+        free_graph(&g);
+        return result;
+    }
+
+7.
+int remove_edge(Graph *g, int from, int to);
+
+Remove edge from -> to (both in [1, g.n]) (set g.mat[from][to] as 0). Takes g address (&g).
+Returning values:
+0:OK
+-9:empty graph
+-10:wrong parametrs from/to
+
+Example:
+//remove_edge
+    printf("removing edge from 2 to 4:\n");
+    if ((result = remove_edge(&g, 2, 4)) < 0) {
+        printf("\nremove_edge exited with code: %d\n", result);
+        free_graph(&g);
+        return result;
+    }
+
+8.
+int add_edge(Graph *g, int from, int to);
+
+Add edge from -> to (both in [1, g.n]) (set g.mat[from][to] as 1). Takes g address (&g).
+Returning values:
+0:OK
+-9:empty graph
+-10:wrong paramets from/to
+
+Example:
+//add_edge
+    printf("adding edge from 5 to 2:\n");
+    int result;
+    if ((result = add_edge(&g, 5, 2)) < 0) {
+        printf("\nadd_edge exited with code: %d\n", result);
+        free_graph(&g);
+        return result;
+    }
+
+9.
+int add_node(Graph *g);
+
+Add empty node as g.n + 1, increases g.n and allocates memory. Takes g address (&g). Set following row and column as all zero.
+Returning values:
+0:OK
+-8:allocate memory error
+
+Example:
+//add_node
+    printf("add node:\n");
+    if ((result = add_node(&g)) < 0) {
+        printf("\nadd_node exited with code: %d\n", result);
+        free_graph(&g);
+        return result;
+    }
+
+10.
+int print_csv(const Graph *g, const char *output_filename);
+
+Open or create csv file output_filename. BE CAREFUL! If file exists, all data will be deleted. Prints g.mat in csv format with comma separators. Takes g address (&g).
+Returning values:
+0:OK
+-1:cannot open file
+-9:empty graph
+
+Example:
+//make csv file of current graph
+    printf("making csv file...done\n----------\n");
+    const char *output_filename_csv = "output.csv";
+    if ((result = print_csv(&g, output_filename_csv)) < 0) {
+        printf("\nprint_csv exited with code: %d\n", result);
+        free_graph(&g);
+        return result;
+    }
+
+11.
+int print_dot(const Graph *g, const char *output_filename);
+
+Open or create dot file output_filename. BE CAREFUL! If file exists, all data will be deleted. Prints graph in dot format. Takes g address (&g). Possible visualization using graphviz: $ dot -Tpng  output.dot -o graph.png
+Returning values:
+0:OK
+-1:cannot open file
+-9:empty graph
+
+Example:
+//make dot file of current graph for vizualization
+    printf("making dot file...done\n----------\n");
+    const char *output_filename_dot = "output.dot";
+    if ((result = print_dot(&g, output_filename_dot)) < 0) {
+        printf("\nprint_dot exited with code: %d\n", result);
+        free_graph(&g);
+        return result;
+    }
+
+12.
+int check_connected(const Graph *g);
+
+Ckeck if graph is connected. Recursive algorithm. Allocates and frees extra memory. Takes g address (&g).
+Returning values:
+0:not connected
+1:connected
+-8:allocate memory error
+-9:empty graph
+
+Example:
+//check if graph is connected
+    if ((result = check_connected(&g)) < 0) {
+        printf("\ncheck_connected exited with code: %d\n", result);
+        free_graph(&g);
+        return result;
+    }
+    if (result) {
+        printf("connected\n----------\n");
+    }
+    else {
+        printf("not connected\n----------\n");
+    }
+
+13.
+int find_path(
+        const Graph *g,
+        int from,
+        int to,
+        int **path,
+        int *path_length);
+
+Find path from -> to in g (both in [1, g.n]). Return it to *path array with path_length number of elements in correct order. Allocates memory at *path, which NEEDS TO BE FREED. *path becomes NULL if path not found. In this case no memory allocated. If *path points at allocated memory before function call, it needs to be freed BEFORE the call, or it will be lost. If from = to allocating memory at *path for 1 eltment only: from. DOES NOT CATCH ALLOCATING ERRORS. Takes g address (&g).
+Returning values:
+0:OK
+-9:empty graph
+-10:wrong parametrs from/to
+
+Example:
+//find path
+    int *path = NULL, path_length = 0;
+    int from = 1, to = 4;
+    if ((result = find_path(&g, from, to, &path, &path_length)) < 0) {
+        printf("\nfind_path exited with code: %d\n", result);
+        free_graph(&g);
+        return result;
+    }
+    if (path == NULL) {
+        printf("no path from %d to %d found\n----------\n", from, to);
+    }
+    else {
+        printf("path from %d to %d found:\n", from, to);
+        printf("%d", path[0]);
+        for (int i = 1; i < path_length; i++) {
+            printf(" -> %d", path[i]);
+        }
+        printf("\n----------\n");
+    }
+    free(path);
