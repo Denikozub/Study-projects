@@ -1,0 +1,27 @@
+CREATE TABLE Students ( First_name  TEXT ( 10 ), Surname TEXT ( 15 ),   Age LONG, Phone TEXT ( 9 ) )
+INSERT   INTO Students ( 'Sergey', 'Ivanov', 18, '145-45-45' )
+INSERT INTO Students ( 'Alexey', 'Petrov',   20, '343-65-45' )
+INSERT INTO Students   ( 'Andrey', 'Fedorov', 23, '123-45-18' )
+INSERT INTO Students ( 'Alexandre'   , 'Zaharov', 20, '345-33-33' )
+SELECT Surname, Phone FROM Students WHERE NOT ( Age > 19    ) OR NOT ( Surname > 'M' )
+SELECT * FROM Students WHERE Age NOT IN ( 18, 19 )
+SELECT Phone FROM Students WHERE Surname = 'Ivanov'
+SELECT * FROM Students WHERE Phone LIKE '%-%-45'
+UPDATE Students SET Age = Age + 1 WHERE ALL
+DELETE FROM Students WHERE ( Age / 2 >= 9.999 ) AND ( Age % 7 = 0 ) AND ( Age + 5 < 27 )
+CREATE TABLE test ( s1  TEXT ( 10 ), s2 TEXT ( 15 ), l1 LONG, l2 LONG )
+INSERT INTO test ( 'hello', 'denis', -20, 10 )
+INSERT INTO test ( 'hello', 'penny', 10, 10 )
+INSERT INTO test ( 'bye', 'denny', 0, 20 )
+INSERT INTO test ( 'denis', 'kenies', 5, -5 )
+INSERT INTO test ( 'i_did', '_p04', -10, -10 )
+SELECT s2 FROM test WHERE s2 LIKE '__nn%'
+SELECT * FROM test WHERE s2 LIKE '[a-f]%s'
+SELECT s1, l1 FROM test WHERE s1 LIKE '[^hb]_[^a-c][hijk]%'
+SELECT * FROM test WHERE s1 IN ( 'bye', 'hello' )
+UPDATE test SET l1 = ( l1 + l2 ) % 7 - ( l1 * 2 ) WHERE ( l1 = l2 ) OR NOT ( l1 > -5 )
+UPDATE test SET s1 = 'what' WHERE s2 LIKE '%y'
+DROP TABLE Students
+DROP TABLE test
+stop
+
